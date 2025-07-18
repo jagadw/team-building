@@ -1,22 +1,28 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BrowserQRCodeReader } from '@zxing/browser';
+import type { IScannerControls } from '@zxing/browser';
 
 const QRScan: React.FC = () => {
   const [result, setResult] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const controlsRef = useRef<IScannerControls | null>(null);
 
   useEffect(() => {
     const codeReader = new BrowserQRCodeReader();
 
-    codeReader.decodeFromVideoDevice(undefined, videoRef.current!, (result, error) => {
+    codeReader.decodeFromVideoDevice(undefined, videoRef.current!, (result, _error, controls) => {
+      if (controlsRef.current === null) {
+        controlsRef.current = controls;
+      }
+
       if (result) {
         setResult(result.getText());
-        codeReader.reset(); // stop after success
+        controls?.stop(); // stop scanning
       }
     });
 
     return () => {
-      codeReader.reset(); // cleanup on unmount
+      controlsRef.current?.stop(); // stop camera
     };
   }, []);
 
