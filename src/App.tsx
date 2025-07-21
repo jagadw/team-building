@@ -11,10 +11,10 @@ const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        {/* <Route path="/" element={<Login />} />
         <Route path="/scan" element={<QRScan />} />
         <Route path="/mission" element={<Mission />} />
-        <Route path="/upload" element={<Upload />} />
+        <Route path="/upload" element={<Upload />} /> */}
         <Route path="/admin/*" element={<DashboardAdmin />} />
         <Route path="/user/*" element={<DashboardUser />} />
       </Routes>
