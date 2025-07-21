@@ -16,7 +16,7 @@ const Upload: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       <div className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow space-y-4">
         <h2 className="text-xl font-bold">Upload Bukti Misi</h2>
         <p className="text-gray-600">Silakan foto langsung untuk bukti pelaksanaan misi:</p>
