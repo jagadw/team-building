@@ -3,7 +3,7 @@ import React from 'react';
 const Missions: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      <h1 className="text-gray-600 hidden md:inline">Completed</h1>
+      <h1 className="text-3xl font-bold mb-2">Completed</h1>
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow">
         <h2 className="text-2xl font-bold mb-2">Mission</h2>
         <p className="text-gray-600 mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit consectetur ut aliquam qui dolore sed aut recusandae! Enim deleniti atque velit aliquid? Possimus nihil est obcaecati error, iusto consequuntur corrupti.</p>
@@ -12,7 +12,7 @@ const Missions: React.FC = () => {
         <a href="https://maps.google.com" target="_blank" className="text-blue-600 underline">Lihat lokasi di Google Maps</a>
       </div>
       
-      <h1 className="text-gray-600 hidden md:inline">On Going</h1>
+      <h1 className="text-3xl font-bold my-2">On Going</h1>
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow">
         <h2 className="text-2xl font-bold mb-2">Mission</h2>
         <p className="text-gray-600 mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit consectetur ut aliquam qui dolore sed aut recusandae! Enim deleniti atque velit aliquid? Possimus nihil est obcaecati error, iusto consequuntur corrupti.</p>
