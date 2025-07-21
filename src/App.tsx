@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './pages/login.tsx';
-import QRScan from './pages/qrscan.tsx';
-import Mission from './pages/mission.tsx';
-import Upload from './pages/upload.tsx';
+import Login from './pages/Login.tsx';
+import QRScan from './pages/Qrscan.tsx';
+import Mission from './pages/Mission.tsx';
+import Upload from './pages/Upload.tsx';
 import DashboardAdmin from './pages/DashboardAdmin.tsx';
 import DashboardUser from './pages/DashboardUser.tsx';
 

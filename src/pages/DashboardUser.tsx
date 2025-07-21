@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
 import SidebarUser from '../components/SidebarUser';
 import Header from '../components/Header';
-import QRScan from './qrscan';
-import Mission from './mission';
+import QRScan from './Qrscan';
+import Mission from './Mission';
 import Missions from './Missions';
-import Upload from './upload';
+import Upload from './Upload';
 
 const DashboardUser = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
