@@ -4,6 +4,8 @@ import Login from './pages/login.tsx';
 import QRScan from './pages/qrscan.tsx';
 import Mission from './pages/mission.tsx';
 import Upload from './pages/upload.tsx';
+import DashboardAdmin from './pages/DashboardAdmin.tsx';
+import DashboardUser from './pages/DashboardUser.tsx';
 
 const App: React.FC = () => {
   return (
@@ -13,6 +15,8 @@ const App: React.FC = () => {
         <Route path="/scan" element={<QRScan />} />
         <Route path="/mission" element={<Mission />} />
         <Route path="/upload" element={<Upload />} />
+        <Route path="/admin/*" element={<DashboardAdmin />} />
+        <Route path="/user/*" element={<DashboardUser />} />
       </Routes>
     </Router>
   );
