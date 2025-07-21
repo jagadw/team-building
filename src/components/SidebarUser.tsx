@@ -26,8 +26,8 @@ const SidebarUser: React.FC<SidebarUserProps> = ({ isOpen, onClose }) => {
         </div>
         <ul className="space-y-3 px-4">
           <li><Link to="/user/progress" className="hover:text-yellow-300 block">My Progress</Link></li>
-          <li><Link to="/user/assigned-checkpoints" className="hover:text-yellow-300 block">Assigned Checkpoints</Link></li>
-          <li><Link to="/user/assigned-missions" className="hover:text-yellow-300 block">Assigned Missions</Link></li>
+          <li><Link to="/user/scan" className="hover:text-yellow-300 block">QR Scan</Link></li>
+          <li><Link to="/user/missions" className="hover:text-yellow-300 block">All Missions</Link></li>
           <li><Link to="/user/upload" className="hover:text-yellow-300 block">Upload Assignment</Link></li>
         </ul>
       </div>
