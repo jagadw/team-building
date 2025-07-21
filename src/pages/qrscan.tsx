@@ -27,7 +27,8 @@ const QRScan: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white px-4 py-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+      <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow">
       <h2 className="text-xl font-bold mb-4 text-center">Scan QR untuk Mulai Misi</h2>
 
       {!result && (
@@ -40,6 +41,7 @@ const QRScan: React.FC = () => {
           <p className="break-all">{result}</p>
         </div>
       )}
+      </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React from 'react';
 
 const Mission: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow">
         <h2 className="text-2xl font-bold mb-2">Misi</h2>
         <p className="text-gray-600 mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Reprehenderit consectetur ut aliquam qui dolore sed aut recusandae! Enim deleniti atque velit aliquid? Possimus nihil est obcaecati error, iusto consequuntur corrupti.</p>
