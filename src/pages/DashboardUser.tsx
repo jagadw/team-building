@@ -23,9 +23,7 @@ const DashboardUser = () => {
           <Route path="mission" element={<Mission />} />
           <Route path="missions" element={<Missions />} />
           <Route path="upload" element={<Upload />} />
-          <Route index element={<div>Welcome User</div>} />
         </Routes>
-        {/* optional if using nested <Outlet /> */}
         <Outlet />
       </div>
       </div>
