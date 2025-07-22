@@ -6,13 +6,13 @@ const Progress: React.FC = () => {
         <main className="max-w-xl mx-auto bg-white p-6 rounded-2xl shadow space-y-4 p-4 overflow-auto">
           <h2 className="text-2xl font-semibold mb-4">Team Progress</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="p-4 bg-white shadow rounded">Points
+            <div className="p-4 bg-white shadow rounded text-center">Points
                 <br />
-                <p className='text-2xl font-semibold'>0</p>
+                <p className='text-2xl font-semibold text-center'>0</p>
             </div>
-            <div className="p-4 bg-white shadow rounded">Missions
+            <div className="p-4 bg-white shadow rounded text-center">Missions
                 <br />
-                <p className='text-2xl font-semibold'>0</p>
+                <p className='text-2xl font-semibold text-center'>0</p>
             </div>
           </div>
         </main>
