@@ -17,12 +17,12 @@ const QRScan: React.FC = () => {
 
       if (result) {
         setResult(result.getText());
-        controls?.stop(); // stop scanning
+        controls?.stop();
       }
     });
 
     return () => {
-      controlsRef.current?.stop(); // stop camera
+      controlsRef.current?.stop();
     };
   }, []);
 
