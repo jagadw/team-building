@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 interface SidebarUserProps {
   isOpen: boolean;
@@ -7,6 +7,8 @@ interface SidebarUserProps {
 }
 
 const SidebarUser: React.FC<SidebarUserProps> = ({ isOpen, onClose }) => {
+  const { slug } = useParams(); // ambil slug dari URL
+
   return (
     <>
       {isOpen && (
@@ -25,10 +27,18 @@ const SidebarUser: React.FC<SidebarUserProps> = ({ isOpen, onClose }) => {
           <button className="md:hidden" onClick={onClose}>✕</button>
         </div>
         <ul className="space-y-3 px-4">
-          <li><Link to="/user/progress" className="hover:text-yellow-300 block">My Progress</Link></li>
-          <li><Link to="/user/scan" className="hover:text-yellow-300 block">QR Scan</Link></li>
-          <li><Link to="/user/missions" className="hover:text-yellow-300 block">All Missions</Link></li>
-          <li><Link to="/user/upload" className="hover:text-yellow-300 block">Upload Assignment</Link></li>
+          <li>
+            <Link to={`/user/event/${slug}/progress`} className="hover:text-yellow-300 block">My Progress</Link>
+          </li>
+          <li>
+            <Link to={`/user/event/${slug}/scan`} className="hover:text-yellow-300 block">QR Scan</Link>
+          </li>
+          <li>
+            <Link to={`/user/event/${slug}/missions`} className="hover:text-yellow-300 block">All Missions</Link>
+          </li>
+          <li>
+            <Link to={`/user/event/${slug}/upload`} className="hover:text-yellow-300 block">Upload Assignment</Link>
+          </li>
         </ul>
       </div>
     </>
