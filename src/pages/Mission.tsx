@@ -46,7 +46,7 @@ const Mission: React.FC = () => {
         </button>
             <Link
               to={`./`}
-              className="mt-4 px-4 w-full bg-green-600 text-white py-2 rounded-xl hover:bg-blue-700"
+              className="mt-4 px-4 w-full bg-green-600 text-white py-2 rounded-xl hover:bg-green-700"
             >
               Next mission
             </Link>
