@@ -6,6 +6,8 @@ const CameraCapture: React.FC<{ onCapture: (dataUrl: string) => void }> = ({ onC
   const [streaming, setStreaming] = useState(false);
 
   useEffect(() => {
+    //TODO: remove after streaming is used
+    console.log(streaming)
     const startCamera = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });

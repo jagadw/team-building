@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 interface Team {
@@ -10,6 +10,7 @@ interface Team {
 
 const Teams = () => {
   const { slug } = useParams();
+  console.log(slug)
 
   const [teams, setTeams] = useState<Team[]>([
     { id: 1, name: 'Team Alpha', slug: 'team-alpha', event: 'Event A' },
