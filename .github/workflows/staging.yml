@@ -7,7 +7,7 @@ on:
 
 env:
   SSH_KEY_FILE_NAME: cicd.pem
-  APP_DIR: staging/web/staging-adventure.f4you.com
+  APP_DIR: staging/web/staging-adventure.j4ugroup.com
 
 jobs:
   deploy:
