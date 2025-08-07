@@ -1,38 +1,56 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-interface Event {
-  id: number;
-  name: string;
-  slug: string;
-}
+import { getEvents, createEvent, deleteEvent, type Event } from '../../services/eventService';
 
 const AdminMenu: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [eventName, setEventName] = useState('');
+  const [description, setDescription] = useState('');
+
+  const loadEvents = async () => {
+    try {
+      const data = await getEvents();
+      setEvents(data);
+    } catch (error) {
+      console.error('Failed to fetch events', error);
+    }
+  };
 
   useEffect(() => {
-    // data dummy
-    const dummy = [
-      { id: 1, name: 'Event A', slug: 'event-a' },
-      { id: 2, name: 'Event B', slug: 'event-b' },
-      { id: 3, name: 'Event C', slug: 'event-c' },
-    ];
-    setEvents(dummy);
+    loadEvents();
   }, []);
 
-  const handleCreateEvent = () => {
+  const handleCreateEvent = async () => {
     if (!eventName.trim()) return;
-    const newSlug = eventName.toLowerCase().replace(/\s+/g, '-');
-    const newEvent: Event = {
-      id: events.length + 1,
+
+    const payload = {
       name: eventName,
-      slug: newSlug,
+      description: description || '-',
+      slug: eventName.toLowerCase().replace(/\s+/g, '-'),
+      is_hidden: false,
     };
-    setEvents([...events, newEvent]);
-    setEventName('');
-    setShowModal(false);
+
+    try {
+      const newEvent = await createEvent(payload);
+      setEvents([...events, newEvent]);
+      setEventName('');
+      setDescription('');
+      setShowModal(false);
+    } catch (error) {
+      console.error('Failed to create event', error);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Delete this event?')) return;
+
+    try {
+      await deleteEvent(id);
+      setEvents(events.filter((e) => e.id !== id));
+    } catch (error) {
+      console.error('Failed to delete event', error);
+    }
   };
 
   return (
@@ -42,13 +60,20 @@ const AdminMenu: React.FC = () => {
 
         <div className="space-y-4">
           {events.map((event) => (
-            <Link
-              key={event.id}
-              to={`/admin/event/${event.slug}/dashboard`}
-              className="block bg-blue-600 text-white py-3 rounded-2xl hover:bg-blue-700 transition font-medium"
-            >
-              {event.name}
-            </Link>
+            <div key={event.id} className="flex items-center justify-between bg-blue-100 px-4 py-2 rounded-lg">
+              <Link
+                to={`/admin/event/${event.slug}/dashboard`}
+                className="text-blue-800 font-medium hover:underline"
+              >
+                {event.name}
+              </Link>
+              <button
+                onClick={() => handleDelete(event.id)}
+                className="text-red-500 hover:text-red-700"
+              >
+                &times;
+              </button>
+            </div>
           ))}
         </div>
 
@@ -56,7 +81,7 @@ const AdminMenu: React.FC = () => {
           onClick={() => setShowModal(true)}
           className="mt-6 bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 transition"
         >
-         Create new event
+          Create new event
         </button>
       </div>
 
@@ -71,6 +96,13 @@ const AdminMenu: React.FC = () => {
               onChange={(e) => setEventName(e.target.value)}
               className="w-full border rounded px-3 py-2"
               placeholder="Nama Event"
+            />
+            <input
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full border rounded px-3 py-2"
+              placeholder="Deskripsi Event"
             />
             <div className="flex justify-end space-x-2">
               <button
