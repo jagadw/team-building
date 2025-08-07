@@ -1,4 +1,4 @@
-import api from './api'; // atau sesuaikan path-nya
+import api from './api';
 export interface Checkpoint {
   id: number;
   name: string;
