@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getTeams, deleteTeam } from '../../services/teamService';
-import type { Team, Event } from '../../services/teamService';
+import {
+  getTeams,
+  deleteTeam,
+  updateTeam,
+  createTeam,
+  type Team,
+  type Event,
+} from '../../services/teamService';
 import axios from '../../services/api';
 
 const Teams = () => {
@@ -11,7 +17,6 @@ const Teams = () => {
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch all events for dropdown
   const fetchEvents = async () => {
     try {
       const res = await axios.get('/v1/admin/events');
@@ -21,27 +26,26 @@ const Teams = () => {
     }
   };
 
-  // Fetch teams based on event slug
-  useEffect(() => {
-    const fetchTeamsData = async () => {
-      if (!slug) return;
-      setLoading(true);
-      try {
-        const data = await getTeams(slug);
-        setTeams(data);
-      } catch (error) {
-        console.error('Failed to fetch teams:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchTeamsData = async () => {
+    if (!slug) return;
+    setLoading(true);
+    try {
+      const data = await getTeams(slug);
+      setTeams(data);
+    } catch (error) {
+      console.error('Failed to fetch teams:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchTeamsData();
     fetchEvents();
   }, [slug]);
 
   const handleEdit = (team: Team) => {
-    setEditingTeam(team);
+    setEditingTeam({ ...team }); // shallow copy to avoid direct mutation
   };
 
   const handleDelete = async (id: number) => {
@@ -56,12 +60,18 @@ const Teams = () => {
     }
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (editingTeam) {
-      setTeams((prev) =>
-        prev.map((t) => (t.id === editingTeam.id ? editingTeam : t))
-      );
-      setEditingTeam(null);
+      try {
+        await updateTeam(editingTeam.id, {
+          name: editingTeam.name,
+        });
+        await fetchTeamsData();
+        setEditingTeam(null);
+      } catch (error) {
+        alert('Failed to update team');
+        console.error(error);
+      }
     }
   };
 
@@ -72,12 +82,12 @@ const Teams = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <table className="w-full border border-gray-200 rounded overflow-hidden">
+        <table className="w-full border text-sm">
           <thead className="bg-gray-100 text-left text-sm">
             <tr>
               <th className="p-2">No</th>
               <th className="p-2">Name</th>
-              <th className="p-2">Slug</th>
+              <th className="p-2">Leader</th>
               <th className="p-2">Event</th>
               <th className="p-2 text-center">Actions</th>
             </tr>
@@ -87,7 +97,12 @@ const Teams = () => {
               <tr key={team.id} className="border-t border-gray-200">
                 <td className="p-2">{index + 1}</td>
                 <td className="p-2">{team.name}</td>
-                <td className="p-2">{team.slug}</td>
+                <td className="p-2">
+                  {
+                    team.participants.find((p) => p.is_leader)?.name ??
+                    'No leader'
+                  }
+                </td>
                 <td className="p-2">{team.event?.name}</td>
                 <td className="p-2 text-center space-x-2">
                   <button
@@ -128,37 +143,25 @@ const Teams = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm">Slug</label>
+                <label className="block text-sm text-gray-600">Leader</label>
                 <input
                   type="text"
-                  className="w-full border rounded px-3 py-2"
-                  value={editingTeam.slug}
-                  onChange={(e) =>
-                    setEditingTeam({ ...editingTeam, slug: e.target.value })
+                  value={
+                    editingTeam.participants.find((p) => p.is_leader)?.name ??
+                    ''
                   }
+                  readOnly
+                  className="w-full border rounded px-3 py-2 bg-gray-100 text-gray-500"
                 />
               </div>
               <div>
-                <label className="block text-sm">Event</label>
-                <select
-                  className="w-full border rounded px-3 py-2"
-                  value={editingTeam.event_id}
-                  onChange={(e) =>
-                    setEditingTeam({
-                      ...editingTeam,
-                      event_id: parseInt(e.target.value),
-                      event:
-                        events.find((ev) => ev.id === parseInt(e.target.value)) ??
-                        editingTeam.event,
-                    })
-                  }
-                >
-                  {events.map((event) => (
-                    <option key={event.id} value={event.id}>
-                      {event.name}
-                    </option>
-                  ))}
-                </select>
+                <label className="block text-sm text-gray-600">Event</label>
+                <input
+                  type="text"
+                  value={editingTeam.event?.name}
+                  readOnly
+                  className="w-full border rounded px-3 py-2 bg-gray-100 text-gray-500"
+                />
               </div>
             </div>
 
