@@ -4,12 +4,15 @@ import {
   createMission,
   updateMission,
   deleteMission,
+  getCheckpoints,
   type Mission,
+  type Checkpoint
 } from '../../services/missionService';
 
 const Missions: React.FC = () => {
   const [missions, setMissions] = useState<Mission[]>([]);
-  const [editing, setEditing] = useState<Mission | null>(null);
+  const [checkpoints, setCheckpoints] = useState<Checkpoint[]>([]);
+  const [editing, setEditing] = useState<Partial<Mission> | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchMissions = async () => {
@@ -17,29 +20,42 @@ const Missions: React.FC = () => {
       setLoading(true);
       const data = await getMissions();
       setMissions(data);
-    } catch (err) {
+    } catch {
       alert('Failed to fetch missions.');
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchCheckpoints = async () => {
+    try {
+      const data = await getCheckpoints();
+      setCheckpoints(data);
+    } catch {
+      alert('Failed to fetch checkpoints.');
+    }
+  };
+
   useEffect(() => {
     fetchMissions();
+    fetchCheckpoints();
   }, []);
 
   const handleSave = async () => {
-    if (!editing) return;
+    if (!editing?.name || !editing.checkpoint_id) {
+      alert('Name dan checkpoint wajib diisi.');
+      return;
+    }
 
     try {
-      if (editing.id) {
+      if (editing.id && editing.id > 0) {
         await updateMission(editing.id, editing);
       } else {
         await createMission(editing);
       }
       await fetchMissions();
       setEditing(null);
-    } catch (error) {
+    } catch {
       alert('Failed to save mission.');
     }
   };
@@ -49,7 +65,7 @@ const Missions: React.FC = () => {
       try {
         await deleteMission(id);
         await fetchMissions();
-      } catch (error) {
+      } catch {
         alert('Failed to delete mission.');
       }
     }
@@ -66,7 +82,7 @@ const Missions: React.FC = () => {
               name: '',
               description: '',
               slug: '',
-              checkpoint: '',
+              checkpoint_id: 0,
               point: 0,
               video: '',
               is_hidden: false,
@@ -98,7 +114,9 @@ const Missions: React.FC = () => {
               <tr key={mission.id} className="border-t">
                 <td className="p-2">{mission.name}</td>
                 <td className="p-2">{mission.description}</td>
-                <td className="p-2">{mission.checkpoint}</td>
+                <td className="p-2">
+                  {checkpoints.find(c => c.id === mission.checkpoint_id)?.name || mission.checkpoint_id}
+                </td>
                 <td className="p-2">{mission.point}</td>
                 <td className="p-2">
                   {mission.video ? (
@@ -142,7 +160,7 @@ const Missions: React.FC = () => {
               {editing.id ? 'Edit Mission' : 'Add Mission'}
             </h3>
             <input
-              value={editing.name}
+              value={editing.name || ''}
               onChange={(e) =>
                 setEditing({ ...editing, name: e.target.value })
               }
@@ -150,24 +168,33 @@ const Missions: React.FC = () => {
               placeholder="Name"
             />
             <textarea
-              value={editing.description}
+              value={editing.description || ''}
               onChange={(e) =>
                 setEditing({ ...editing, description: e.target.value })
               }
               className="w-full mb-2 p-2 border rounded"
               placeholder="Description"
             />
-            <input
-              value={editing.checkpoint}
+
+            {/* Dropdown checkpoint */}
+            <select
+              value={editing.checkpoint_id || 0}
               onChange={(e) =>
-                setEditing({ ...editing, checkpoint: e.target.value })
+                setEditing({ ...editing, checkpoint_id: parseInt(e.target.value) })
               }
               className="w-full mb-2 p-2 border rounded"
-              placeholder="Checkpoint"
-            />
+            >
+              <option value={0}>Pilih Checkpoint</option>
+              {checkpoints.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+
             <input
               type="number"
-              value={editing.point}
+              value={editing.point || 0}
               onChange={(e) =>
                 setEditing({ ...editing, point: parseInt(e.target.value) })
               }
@@ -175,7 +202,7 @@ const Missions: React.FC = () => {
               placeholder="Point"
             />
             <input
-              value={editing.video}
+              value={editing.video || ''}
               onChange={(e) =>
                 setEditing({ ...editing, video: e.target.value })
               }
@@ -185,7 +212,7 @@ const Missions: React.FC = () => {
             <label className="block mb-2">
               <input
                 type="checkbox"
-                checked={editing.is_hidden}
+                checked={editing.is_hidden || false}
                 onChange={(e) =>
                   setEditing({ ...editing, is_hidden: e.target.checked })
                 }
