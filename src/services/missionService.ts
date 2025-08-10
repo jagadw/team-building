@@ -5,14 +5,24 @@ export interface Mission {
   name: string;
   description: string;
   slug: string;
-  checkpoint: string;
+  checkpoint_id: number;
   point: number;
   video: string;
   is_hidden: boolean;
 }
 
+export interface Checkpoint {
+  id: number;
+  name: string;
+}
+
 export const getMissions = async (): Promise<Mission[]> => {
   const res = await api.get('/v1/admin/missions');
+  return res.data.data;
+};
+
+export const getCheckpoints = async (): Promise<Checkpoint[]> => {
+  const res = await api.get('/v1/admin/checkpoints');
   return res.data.data;
 };
 

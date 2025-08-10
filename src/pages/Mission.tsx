@@ -1,89 +1,239 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import ProgressBar from "@ramonak/react-progress-bar";
-import CameraCapture from './CameraCapture';
+import React, { useEffect, useState } from 'react';
+import {
+  getMissions,
+  createMission,
+  updateMission,
+  deleteMission,
+  getCheckpoints,
+  type Mission,
+  type Checkpoint
+} from '../services/missionService';
 
-const Mission: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [imageData, setImageData] = useState<string | null>(null);
+const Missions: React.FC = () => {
+  const [missions, setMissions] = useState<Mission[]>([]);
+  const [checkpoints, setCheckpoints] = useState<Checkpoint[]>([]);
+  const [editing, setEditing] = useState<Partial<Mission> | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleCapture = (dataUrl: string) => {
-    setImageData(dataUrl);
+  const fetchMissions = async () => {
+    try {
+      setLoading(true);
+      const data = await getMissions();
+      setMissions(data);
+    } catch {
+      alert('Failed to fetch missions.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSubmit = () => {
-    if (!imageData) return alert("Harap ambil foto terlebih dahulu!");
-    console.log("Mengirim foto:", imageData);
-    alert("Bukti berhasil dikirim!");
-    setIsModalOpen(false);
-    setImageData(null);
+  const fetchCheckpoints = async () => {
+    try {
+      const data = await getCheckpoints();
+      setCheckpoints(data);
+    } catch {
+      alert('Failed to fetch checkpoints.');
+    }
+  };
+
+  useEffect(() => {
+    fetchMissions();
+    fetchCheckpoints();
+  }, []);
+
+  const handleSave = async () => {
+    if (!editing?.name || !editing.checkpoint_id) {
+      alert('Name dan checkpoint wajib diisi.');
+      return;
+    }
+
+    try {
+      if (editing.id && editing.id > 0) {
+        await updateMission(editing.id, editing);
+      } else {
+        await createMission(editing);
+      }
+      await fetchMissions();
+      setEditing(null);
+    } catch {
+      alert('Failed to save mission.');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (confirm('Are you sure?')) {
+      try {
+        await deleteMission(id);
+        await fetchMissions();
+      } catch {
+        alert('Failed to delete mission.');
+      }
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      <div className="max-w-2xl mx-auto bg-white p-6 rounded-2xl shadow">
-        <ProgressBar completed={40} /><br />
-        <h2 className="text-2xl font-bold mb-2">Misi</h2>
-        <p className="text-gray-600 mb-4">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit...
-        </p>
-
-        <iframe
-          className="w-full h-48 rounded-xl mb-4"
-          src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d44619.77245401432!2d115.22191393898179!3d-8.70408705658873!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sid!4v1752932685914!5m2!1sen!2sid"
-          allowFullScreen
-        ></iframe>
-
-        <a href="https://maps.google.com" target="_blank" className="text-blue-600 underline">
-          Lihat lokasi di Google Maps
-        </a>
-
+    <div className="bg-white p-6 rounded-xl shadow-md">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Missions</h2>
         <button
-          onClick={() => setIsModalOpen(true)}
-          className="mt-4 mb-4 w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700"
+          onClick={() =>
+            setEditing({
+              id: 0,
+              name: '',
+              description: '',
+              slug: '',
+              checkpoint_id: 0,
+              point: 0,
+              video: '',
+              is_hidden: false,
+            })
+          }
+          className="bg-blue-600 text-white px-4 py-2 rounded"
         >
-          Upload Bukti Misi
+          + Add Mission
         </button>
-            <Link
-              to={`./`}
-              className="mt-4 px-4 w-full bg-green-600 text-white py-2 rounded-xl hover:bg-green-700"
-            >
-              Next mission
-            </Link>
       </div>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-xl shadow-xl space-y-4 relative">
-            <button
-              className="absolute top-2 right-4 text-gray-500 hover:text-gray-700 text-xl"
-              onClick={() => {
-                setIsModalOpen(false);
-                setImageData(null);
-              }}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <table className="w-full border text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="p-2">Name</th>
+              <th className="p-2">Description</th>
+              <th className="p-2">Checkpoint</th>
+              <th className="p-2">Point</th>
+              <th className="p-2">Video</th>
+              <th className="p-2">Hidden</th>
+              <th className="p-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {missions.map((mission) => (
+              <tr key={mission.id} className="border-t">
+                <td className="p-2">{mission.name}</td>
+                <td className="p-2">{mission.description}</td>
+                <td className="p-2">
+                  {checkpoints.find(c => c.id === mission.checkpoint_id)?.name || mission.checkpoint_id}
+                </td>
+                <td className="p-2">{mission.point}</td>
+                <td className="p-2">
+                  {mission.video ? (
+                    <a
+                      href={mission.video}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      Video
+                    </a>
+                  ) : (
+                    <span className="text-gray-400">-</span>
+                  )}
+                </td>
+                <td className="p-2">{mission.is_hidden ? 'Yes' : 'No'}</td>
+                <td className="p-2 space-x-2">
+                  <button
+                    onClick={() => setEditing(mission)}
+                    className="text-blue-500 hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(mission.id)}
+                    className="text-red-500 hover:underline"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      {editing && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+            <h3 className="text-lg font-semibold mb-4">
+              {editing.id ? 'Edit Mission' : 'Add Mission'}
+            </h3>
+            <input
+              value={editing.name || ''}
+              onChange={(e) =>
+                setEditing({ ...editing, name: e.target.value })
+              }
+              className="w-full mb-2 p-2 border rounded"
+              placeholder="Name"
+            />
+            <textarea
+              value={editing.description || ''}
+              onChange={(e) =>
+                setEditing({ ...editing, description: e.target.value })
+              }
+              className="w-full mb-2 p-2 border rounded"
+              placeholder="Description"
+            />
+
+            {/* Dropdown checkpoint */}
+            <select
+              value={editing.checkpoint_id || 0}
+              onChange={(e) =>
+                setEditing({ ...editing, checkpoint_id: parseInt(e.target.value) })
+              }
+              className="w-full mb-2 p-2 border rounded"
             >
-              ✕
-            </button><br />
+              <option value={0}>Pilih Checkpoint</option>
+              {checkpoints.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
 
-            <ProgressBar completed={60} />
-            <h2 className="text-xl font-bold">Upload Bukti Misi</h2>
-            <p className="text-gray-600">Silakan foto langsung untuk bukti pelaksanaan misi:</p>
-
-            {!imageData ? (
-              <CameraCapture onCapture={handleCapture} />
-            ) : (
-              <div className="w-full h-64 rounded-xl overflow-hidden border-2 border-green-400">
-                <img src={imageData} alt="Captured" className="w-full h-full object-cover" />
-              </div>
-            )}
-
-            <button
-              onClick={handleSubmit}
-              className="w-full bg-green-600 text-white py-2 rounded-xl hover:bg-green-700"
-            >
-              Kirim Bukti
-            </button>
+            <input
+              type="number"
+              value={editing.point || 0}
+              onChange={(e) =>
+                setEditing({ ...editing, point: parseInt(e.target.value) })
+              }
+              className="w-full mb-2 p-2 border rounded"
+              placeholder="Point"
+            />
+            <input
+              value={editing.video || ''}
+              onChange={(e) =>
+                setEditing({ ...editing, video: e.target.value })
+              }
+              className="w-full mb-2 p-2 border rounded"
+              placeholder="YouTube Video URL"
+            />
+            <label className="block mb-2">
+              <input
+                type="checkbox"
+                checked={editing.is_hidden || false}
+                onChange={(e) =>
+                  setEditing({ ...editing, is_hidden: e.target.checked })
+                }
+                className="mr-2"
+              />
+              Hidden
+            </label>
+            <div className="flex justify-end space-x-2 mt-4">
+              <button
+                onClick={() => setEditing(null)}
+                className="bg-gray-300 px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+              >
+                Save
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -91,4 +241,4 @@ const Mission: React.FC = () => {
   );
 };
 
-export default Mission;
+export default Missions;
