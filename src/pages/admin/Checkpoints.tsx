@@ -1,23 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { getCheckpoints, createCheckpoint, updateCheckpoint, deleteCheckpoint } from '../../services/checkpointService';
+import { type Checkpoint, getCheckpoints, createCheckpoint, updateCheckpoint, deleteCheckpoint } from '../../services/checkpointService';
 
-interface Checkpoint {
-  id: number;
-  name: string;
-  description: string;
-  slug: string;
-  location: string;
-  point: number;
-}
+// interface Checkpoint {
+//   id: number;
+//   name: string;
+//   description: string;
+//   slug: string;
+//   location: string;
+//   point: number;
+//   event_id: number;
+// }
 
 const Checkpoints: React.FC = () => {
   const [checkpoints, setCheckpoints] = useState<Checkpoint[]>([]);
+  const [eventId, setEventId] = useState<number | null>(null);
   const [editing, setEditing] = useState<Checkpoint | null>(null);
   const [newCheckpoint, setNewCheckpoint] = useState<Checkpoint | null>(null);
 
   const fetchCheckpoints = async () => {
     const data = await getCheckpoints();
     setCheckpoints(data);
+
+    if (data.length > 0 && data[0].event_id) {
+      setEventId(data[0].event_id);
+    }
   };
 
   useEffect(() => {
@@ -43,8 +49,23 @@ const Checkpoints: React.FC = () => {
   };
 
   const openForm = (cp?: Checkpoint) => {
-    if (cp) setEditing(cp);
-    else setNewCheckpoint({ id: 0, name: '', description: '', slug: '', location: '', point: 0 });
+    if (cp) {
+      setEditing(cp);
+    } else {
+      if (!eventId) {
+        alert("Event ID belum tersedia, silakan tunggu data termuat.");
+        return;
+      }
+      setNewCheckpoint({
+        id: 0,
+        name: '',
+        description: '',
+        slug: '',
+        location: '',
+        point: 0,
+        event_id: eventId
+      });
+    }
   };
 
   const currentForm = editing || newCheckpoint;
@@ -65,6 +86,7 @@ const Checkpoints: React.FC = () => {
           + New
         </button>
       </div>
+
       <table className="w-full border text-sm">
         <thead className="bg-gray-100">
           <tr>

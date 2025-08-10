@@ -6,6 +6,7 @@ export interface Checkpoint {
   slug: string;
   location: string;
   point: number;
+  event_id: number;
 }
 
 export const getCheckpoints = async (): Promise<Checkpoint[]> => {
