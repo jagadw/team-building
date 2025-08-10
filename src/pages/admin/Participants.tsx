@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import participantService from '../../services/participantService';
 
 interface Participant {
   id: number;
@@ -8,24 +9,44 @@ interface Participant {
 }
 
 const Participants = () => {
-  const [participants, setParticipants] = useState<Participant[]>([
-    { id: 1, name: 'Alice', phone: '08123456789', team: 'Team Alpha' },
-    { id: 2, name: 'Bob', phone: '08234567890', team: 'Team Bravo' },
-  ]);
+  const [participants, setParticipants] = useState<Participant[]>([]);
   const [editing, setEditing] = useState<Participant | null>(null);
 
-  const handleDelete = (id: number) => {
+  const fetchParticipants = async () => {
+    const res = await participantService.getAll();
+    const data = Array.isArray(res.data) ? res.data : res.data.data || [];
+    setParticipants(
+      data.map((p: any) => ({
+        id: p.id,
+        name: p.name,
+        phone: p.phone,
+        team: p.team_id ? `Team ${p.team_id}` : '-'
+      }))
+    );
+  };
+
+  const handleDelete = async (id: number) => {
     if (confirm('Are you sure?')) {
-      setParticipants(participants.filter(p => p.id !== id));
+      await participantService.delete(id);
+      fetchParticipants();
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editing) {
-      setParticipants(participants.map(p => (p.id === editing.id ? editing : p)));
+      await participantService.update(editing.id, {
+        name: editing.name,
+        phone: editing.phone,
+        team_id: parseInt(editing.team.replace(/\D/g, '')) || null
+      });
       setEditing(null);
+      fetchParticipants();
     }
   };
+
+  useEffect(() => {
+    fetchParticipants();
+  }, []);
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md">
