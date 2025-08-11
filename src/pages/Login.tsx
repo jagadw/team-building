@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../services/authService';
+import { jwtDecode } from 'jwt-decode';
+
+interface JwtPayload {
+  email: string;
+  id: number;
+  role: string;
+  iat: number;
+  exp: number;
+  iss: string;
+}
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -12,8 +22,17 @@ const Login: React.FC = () => {
     e.preventDefault();
     setError('');
     try {
-      await login({ email, password });
-      navigate('/adminmenu');
+      const data = await login({ email, password });
+
+      const decoded: JwtPayload = jwtDecode(data.access_token);
+
+      if (decoded.role === 'admin') {
+        navigate('/adminmenu');
+      } else if (decoded.role === 'participant') {
+        navigate('/qrscan');
+      } else {
+        setError('Unknown role');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');
     }
