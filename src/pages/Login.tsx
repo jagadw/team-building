@@ -29,7 +29,7 @@ const Login: React.FC = () => {
       if (decoded.role === 'admin') {
         navigate('/adminmenu');
       } else if (decoded.role === 'participant') {
-        navigate('/qrscan');
+        navigate('/scan');
       } else {
         setError('Unknown role');
       }
