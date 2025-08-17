@@ -1,22 +1,34 @@
 import api from './api';
 
-const endpoint = '/v1/admin/participants';
+const participantEndpoint = '/v1/admin/participants';
+const teamEndpoint = '/v1/admin/teams';
 
 const participantService = {
   getAll: async () => {
-    return api.get(endpoint);
+    return api.get(participantEndpoint);
   },
   getById: async (id: number) => {
-    return api.get(`${endpoint}/${id}`);
+    return api.get(`${participantEndpoint}/${id}`);
   },
   create: async (data: any) => {
-    return api.post(endpoint, data);
+    return api.post(participantEndpoint, data);
   },
   update: async (id: number, data: any) => {
-    return api.put(`${endpoint}/${id}`, data);
+    return api.put(`${participantEndpoint}/${id}`, data);
   },
   delete: async (id: number) => {
-    return api.delete(`${endpoint}/${id}`);
+    return api.delete(`${participantEndpoint}/${id}`);
+  },
+  getTeams: async () => {
+    return api.get(teamEndpoint);
+  },
+  createTeamWithParticipants: async (teamData: {
+    name: string;
+    event_id: number;
+    user: { email: string; password: string };
+    participants: { name: string; phone: string; is_leader: boolean }[];
+  }) => {
+    return api.post(teamEndpoint, teamData);
   }
 };
 
