@@ -47,3 +47,13 @@ export const getAssignments = async (page = 1): Promise<AssignmentResponse> => {
   const res = await api.get(`/v1/admin/assignments?page=${page}`);
   return res.data;
 };
+
+export namespace Req {}
+export namespace Res {}
+
+export namespace AssignmentService {
+    export const createAssignment = async (event: string, checkpoint: string, data: Pick<Assignment, 'mission_id' | "file">): Promise<Assignment> => {
+        const res = await api.post(`/v1/participant/events/${event}/missions/${checkpoint}/submission/${data.mission_id}`, { file: data.file });
+        return res.data.data;
+    };
+}

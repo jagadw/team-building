@@ -20,6 +20,7 @@ const App: React.FC = () => {
             <Router>
                 <Routes>
                     <Route path="/" element={<Login />} />
+                    <Route path="/leaderboard" element={<Leaderboard />} />
 
                     <Route element={<Auth roles={["admin"]} />}>
                         <Route path="/adminmenu" element={<AdminMenu />} />
@@ -30,9 +31,7 @@ const App: React.FC = () => {
                         <Route path="/next" element={<ParticipantMenu />} />
                         {/* <Route path="/participant/" element={<DashboardUser />} /> */}
                         <Route path="/event/:slug/*" element={<DashboardUser />} />
-
                         <Route path="/menu" element={<Menu />} />
-                        <Route path="/leaderboard" element={<Leaderboard />} />
                         <Route path="/scan" element={<QRScan />} />
                         <Route path="/mission" element={<Mission />} />
                         <Route path="/upload" element={<Upload />} />

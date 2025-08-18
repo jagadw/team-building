@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-const CameraCapture: React.FC<{ onCapture: (dataUrl: string) => void }> = ({ onCapture }) => {
+const CameraCapture: React.FC<{ onCapture: (dataUrl: string, b: Blob) => void }> = ({ onCapture }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [streaming, setStreaming] = useState(false);
@@ -36,7 +36,10 @@ const CameraCapture: React.FC<{ onCapture: (dataUrl: string) => void }> = ({ onC
     canvasRef.current.height = videoRef.current.videoHeight;
     ctx.drawImage(videoRef.current, 0, 0);
     const dataUrl = canvasRef.current.toDataURL('image/png');
-    onCapture(dataUrl);
+    canvasRef.current.toBlob(x => {
+      if (!x) return;
+      onCapture(dataUrl, x);
+    })
   };
 
   return (

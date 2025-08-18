@@ -19,6 +19,7 @@ type AuthState = {
     user: JwtPayload | null;
     isAuthenticated: boolean;
     isLoading: boolean;
+    refetch: () => void; // optional, for manual refetch
 
     logout: () => void;
 };
@@ -58,6 +59,15 @@ export const userStore = create<AuthState>((set) => ({
     user: initial.user,
     isAuthenticated: !!initial.user,
     isLoading: true,
+    refetch: () => {
+        const { token, user } = readTokenFromStorage();
+        set({
+            accessToken: token,
+            user,
+            isAuthenticated: !!user,
+            isLoading: false,
+        });
+    },
 
     logout: async () => {
         await authLogout();
