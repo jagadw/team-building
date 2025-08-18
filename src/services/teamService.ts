@@ -29,7 +29,7 @@ export interface Team {
 }
 
 export const getTeams = async (eventSlug: string): Promise<Team[]> => {
-  const response = await axios.get(`/v1/admin/teams?page=1`);
+  const response = await axios.get(`/v1/admin/teams?page=1&slug=${eventSlug}`);
   return response.data.data;
 };
 

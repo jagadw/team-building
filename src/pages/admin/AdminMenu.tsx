@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { getEvents, createEvent, deleteEvent, type Event } from '../../services/eventService';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { getEvents, createEvent, deleteEvent, type Event } from "../../services/eventService";
+import { logout } from "../../services/authService";
+import { userStore } from "../../store/user-store";
 
 const AdminMenu: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [eventName, setEventName] = useState('');
-  const [description, setDescription] = useState('');
+  const [eventName, setEventName] = useState("");
+  const [description, setDescription] = useState("");
+
+  const { user } = userStore();
 
   const loadEvents = async () => {
     try {
       const data = await getEvents();
       setEvents(data);
     } catch (error) {
-      console.error('Failed to fetch events', error);
+      console.error("Failed to fetch events", error);
     }
   };
 
@@ -26,67 +30,85 @@ const AdminMenu: React.FC = () => {
 
     const payload = {
       name: eventName,
-      description: description || '-',
+      description: description || "-",
       slug: eventName
         .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-'),
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-"),
       is_hidden: false,
     };
 
     try {
       await createEvent(payload);
       await loadEvents();
-      setEventName('');
-      setDescription('');
+      setEventName("");
+      setDescription("");
       setShowModal(false);
     } catch (error) {
-      console.error('Failed to create event', error);
+      console.error("Failed to create event", error);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Delete this event?')) return;
+    if (!confirm("Delete this event?")) return;
 
     try {
       await deleteEvent(id);
       setEvents(events.filter((e) => e.id !== id));
     } catch (error) {
-      console.error('Failed to delete event', error);
+      console.error("Failed to delete event", error);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md text-center space-y-6">
-        <h1 className="text-2xl font-bold">Menu</h1>
-
-        <div className="space-y-4">
-          {events.map((event) => (
-            <div key={event.id} className="flex items-center justify-between bg-blue-100 px-4 py-2 rounded-lg">
-              <Link
-                to={`/admin/event/${event.slug}/dashboard`}
-                className="text-blue-800 font-medium hover:underline"
-              >
-                {event.name}
-              </Link>
-              <button
-                onClick={() => handleDelete(event.id)}
-                className="text-red-500 hover:text-red-700"
-              >
-                &times;
-              </button>
-            </div>
-          ))}
+    <div className="min-h-screen flex flex-col items-center bg-gray-100">
+      <div className="w-full max-w-4xl">
+        {/* Header */}
+        <div className="flex justify-between items-center bg-white shadow-md px-6 py-4 rounded-b-2xl">
+          <h1 className="text-2xl font-bold">Menu</h1>
+          <div className="flex items-center space-x-4">
+            {user && <span className="text-gray-700">{user.email}</span>}
+            <button
+              onClick={logout}
+              className="text-red-600"
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
-        <button
-          onClick={() => setShowModal(true)}
-          className="mt-6 bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 transition"
-        >
-          Create new event
-        </button>
+        {/* Body */}
+        <div className="bg-white shadow-lg rounded-2xl p-8 mt-6 w-full max-w-md mx-auto text-center space-y-6">
+          <div className="space-y-4">
+            {events.map((event) => (
+              <div
+                key={event.id}
+                className="flex items-center justify-between bg-blue-100 px-4 py-2 rounded-lg"
+              >
+                <Link
+                  to={`/admin/event/${event.slug}/dashboard`}
+                  className="text-blue-800 font-medium hover:underline"
+                >
+                  {event.name}
+                </Link>
+                <button
+                  onClick={() => handleDelete(event.id)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setShowModal(true)}
+            className="mt-6 bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 transition"
+          >
+            Create new event
+          </button>
+        </div>
       </div>
 
       {showModal && (

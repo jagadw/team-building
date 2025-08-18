@@ -33,11 +33,11 @@ const SidebarAdmin: React.FC<SidebarAdminProps> = ({ isOpen, onClose }) => {
               Teams
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link to={`/admin/event/${slug}/participants`} className="hover:text-yellow-400 block">
               Participants
             </Link>
-          </li>
+          </li> */}
           <li>
             <Link to={`/admin/event/${slug}/checkpoints`} className="hover:text-yellow-400 block">
               Checkpoints
