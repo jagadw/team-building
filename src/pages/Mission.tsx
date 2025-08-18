@@ -92,7 +92,9 @@ const Mission: React.FC = () => {
                 didOpen: () => Swal.showLoading(),
             });
 
-            const upload = UploadService.uploadParticipant(new Blob(imageData));
+            const file = new Blob();
+            file;
+            const upload = UploadService.uploadParticipant();
 
             // Example: send base64 image to your server
             // const resp = await fetch(`/api/v1/missions/${missionId}/proof`, {
