@@ -59,6 +59,11 @@ export namespace Req {}
 export namespace CheckpointService {
     export const getCheckpointBySlug = async (slug: string, checkpoint: string) => {
         const response = await api.get<IApiResponse<Res.Checkpoint>>(`/v1/participant/events/${slug}/checkpoints/${checkpoint}`);
-        return response.data.data;
+        return response.data;
+    };
+
+    export const scanCheckpoint = async (slug: string, checkpoint: string) => {
+        const response = await api.post<IApiResponse<never>>(`/v1/participant/events/${slug}/checkpoints/${checkpoint}`);
+        return response.data;
     };
 }
