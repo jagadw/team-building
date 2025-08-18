@@ -1,28 +1,33 @@
-import axios from './api';
+import api, { _apiRaw } from "./api";
 
 export interface LoginPayload {
-  email: string;
-  password: string;
+	email: string;
+	password: string;
 }
 
 export interface LoginResponse {
-  access_token: string;
-  refresh_token: string;
+	access_token: string;
+	refresh_token: string;
 }
 
 export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
-  const response = await axios.post('/v1/auth/login', payload);
+	const response = await _apiRaw.post("/v1/auth/login", payload);
+	const data = response.data.data;
 
-  const data = response.data.data;
+	localStorage.setItem("access_token", data.access_token);
+	localStorage.setItem("refresh_token", data.refresh_token);
 
-  localStorage.setItem('token', data.access_token);
-  localStorage.setItem('refresh_token', data.refresh_token);
-
-  return data;
+	return data;
 };
 
-export const logout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('refresh_token');
-  window.location.href = '/';
+export const logout = async () => {
+	const refreshToken = localStorage.getItem("refresh_token");
+
+	await api.post("/v1/auth/logout", {
+		refresh_token: refreshToken,
+	});
+
+	localStorage.removeItem("access_token");
+	localStorage.removeItem("refresh_token");
+	window.location.href = "/";
 };
