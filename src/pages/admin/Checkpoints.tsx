@@ -106,7 +106,7 @@ const handleDownloadQR = (slug: string) => {
           <tr>
             <th className="p-2">Name</th>
             <th className="p-2">Description</th>
-            <th className="p-2">Slug (QR)</th>
+            <th className="p-2">Download QR</th>
             <th className="p-2">Location</th>
             <th className="p-2">Point</th>
             <th className="p-2">Actions</th>
@@ -131,7 +131,7 @@ const handleDownloadQR = (slug: string) => {
                     onClick={() => handleDownloadQR(cp.slug)}
                     className="text-blue-600 underline hover:text-blue-800"
                   >
-                    {cp.slug}
+                    {cp.name}
                   </button>
                 </div>
               </td>
