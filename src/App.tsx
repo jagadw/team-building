@@ -29,7 +29,7 @@ const App: React.FC = () => {
                     <Route element={<Auth roles={["participant"]} />}>
                         <Route path="/next" element={<ParticipantMenu />} />
                         {/* <Route path="/participant/" element={<DashboardUser />} /> */}
-                        <Route path="/event/:slug/" element={<DashboardUser />} />
+                        <Route path="/event/:slug/*" element={<DashboardUser />} />
 
                         <Route path="/menu" element={<Menu />} />
                         <Route path="/leaderboard" element={<Leaderboard />} />
