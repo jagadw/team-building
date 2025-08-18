@@ -22,9 +22,11 @@ export const login = async (payload: LoginPayload): Promise<LoginResponse> => {
 
 export const logout = async () => {
 	const refreshToken = localStorage.getItem("refresh_token");
+	const accessToken = localStorage.getItem("access_token");
 
 	await api.post("/v1/auth/logout", {
 		refresh_token: refreshToken,
+		access_token: accessToken,
 	});
 
 	localStorage.removeItem("access_token");

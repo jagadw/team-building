@@ -21,7 +21,7 @@ const Login: React.FC = () => {
 
 	const { isAuthenticated, user } = userStore();
 	if (isAuthenticated) {
-		const to = user?.role === "admin" ? "/adminmenu" : user?.role === "participant" ? "/scan" : "/"; // fallback
+		const to = user?.role === "admin" ? "/adminmenu" : user?.role === "participant" ? "/participant" : "/"; // fallback
 		return <Navigate to={to} replace />;
 	}
 
