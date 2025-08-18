@@ -66,17 +66,28 @@ const Checkpoints: React.FC = () => {
     else if (newCheckpoint) setNewCheckpoint({ ...newCheckpoint, [key]: value });
   };
 
-  // ✅ generate QR dari <QRCodeCanvas> lalu auto-download
-  const handleDownloadQR = (slug: string) => {
-    const canvas = document.getElementById(`qr-${slug}`) as HTMLCanvasElement;
-    if (!canvas) return;
+const handleDownloadQR = (slug: string) => {
+  const qrCanvas = document.getElementById(`qr-${slug}`) as HTMLCanvasElement;
+  if (!qrCanvas) return;
 
-    const pngUrl = canvas.toDataURL("image/png");
-    const link = document.createElement("a");
-    link.href = pngUrl;
-    link.download = `${slug}-qr.png`;
-    link.click();
-  };
+  const size = qrCanvas.width + 40;
+  const borderedCanvas = document.createElement("canvas");
+  borderedCanvas.width = size;
+  borderedCanvas.height = size;
+  const ctx = borderedCanvas.getContext("2d");
+  if (!ctx) return;
+
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, size, size);
+
+  ctx.drawImage(qrCanvas, 20, 20);
+
+  const pngUrl = borderedCanvas.toDataURL("image/png");
+  const link = document.createElement("a");
+  link.href = pngUrl;
+  link.download = `${slug}-qr.png`;
+  link.click();
+};
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md">
@@ -113,6 +124,7 @@ const Checkpoints: React.FC = () => {
                     id={`qr-${cp.slug}`}
                     value={cp.slug}
                     size={100}
+                    className='border-3 border-white'
                     style={{ display: "none" }}
                   />
                   <button
@@ -144,7 +156,7 @@ const Checkpoints: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">
               {editing ? 'Edit Checkpoint' : 'New Checkpoint'}
             </h3>
-            {(['name', 'description', 'slug', 'location', 'point'] as (keyof Checkpoint)[]).map(key => (
+            {(['name', 'description', 'location', 'point'] as (keyof Checkpoint)[]).map(key => (
               <input
                 key={key}
                 value={currentForm[key]}
