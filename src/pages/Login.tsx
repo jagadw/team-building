@@ -30,13 +30,12 @@ const Login: React.FC = () => {
         setError("");
         try {
             const data = await login({ email, password });
-
             const decoded: JwtPayload = jwtDecode(data.access_token);
 
-            if (decoded.role === "admin") {
+            if (decoded.role == "admin") {
                 navigate("/adminmenu");
-            } else if (decoded.role === "participant") {
-                navigate("/scan");
+            } else if (decoded.role == "participant") {
+                navigate("/next");
             } else {
                 setError("Unknown role");
             }
