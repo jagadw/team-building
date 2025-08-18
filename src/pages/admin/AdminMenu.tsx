@@ -27,13 +27,17 @@ const AdminMenu: React.FC = () => {
     const payload = {
       name: eventName,
       description: description || '-',
-      slug: eventName.toLowerCase().replace(/\s+/g, '-'),
+      slug: eventName
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-'),
       is_hidden: false,
     };
 
     try {
-      const newEvent = await createEvent(payload);
-      setEvents([...events, newEvent]);
+      await createEvent(payload);
+      await loadEvents();
       setEventName('');
       setDescription('');
       setShowModal(false);
@@ -85,7 +89,6 @@ const AdminMenu: React.FC = () => {
         </button>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-lg space-y-4">
