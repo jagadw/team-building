@@ -7,7 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Accordion, AccordionItem, AccordionContent, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import Swal from "sweetalert2";
-import { UploadService } from "@/services/upload.api";
+import { UploadService, Util } from "@/services/upload.api";
+import { AssignmentService } from "@/services/assignmentService";
+// import { dataURLtoBlob } from "dataurl-to-blob";
 
 type MissionItem = {
     id: number;
@@ -27,6 +29,7 @@ type Checkpoint = {
 const Mission: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [imageData, setImageData] = useState<string | null>(null);
+    const [imgBlob, setImgBlob] = useState<Blob | null>(null);
     const [missionId, setMissionId] = useState<number | null>(null);
 
     const { slugCheckpoint, slug } = useParams();
@@ -57,8 +60,9 @@ const Mission: React.FC = () => {
 
     const selectedMission = useMemo(() => checkpoint?.missions?.find((m) => m.id === missionId) || null, [checkpoint, missionId]);
 
-    const handleCapture = (dataUrl: string) => {
+    const handleCapture = (dataUrl: string,b: Blob) => {
         setImageData(dataUrl);
+        setImgBlob(b)
     };
 
     // Submit example — adjust to your real API
@@ -83,7 +87,7 @@ const Mission: React.FC = () => {
         }
 
         try {
-            if (!imageData) return;
+            if (!imageData || !imgBlob) return;
 
             const sending = Swal.fire({
                 title: "Sending...",
@@ -92,9 +96,21 @@ const Mission: React.FC = () => {
                 didOpen: () => Swal.showLoading(),
             });
 
-            const file = new Blob();
-            file;
-            const upload = UploadService.uploadParticipant();
+            // const file = Util.dataURItoFile(imageData, `mission-${missionId}.jpg`);
+            const file = new File([imgBlob], "mission-" + missionId + ".jpg", { type: "image/jpeg" });
+            const upload = await UploadService.uploadParticipant({
+              file: file,
+            });
+
+            if (!upload.success) {
+              // (await sending).dismiss = true;
+                return Swal.fire({
+                    title: "Upload failed",
+                    text: upload.message || "Something went wrong.",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                });
+            }
 
             // Example: send base64 image to your server
             // const resp = await fetch(`/api/v1/missions/${missionId}/proof`, {
@@ -109,7 +125,8 @@ const Mission: React.FC = () => {
             // }
 
             // (await sending).close();
-            await Swal.fire({ title: "Sent!", text: "Bukti berhasil dikirim!", icon: "success", confirmButtonText: "Nice" });
+            await AssignmentService.createAssignment(slug!, slugCheckpoint!, {mission_id: missionId, file: upload.data!.filename}) 
+            await Swal.fire({ title: "Sent!", text: "Assignment sent", icon: "success", confirmButtonText: "Nice" });
 
             setIsModalOpen(false);
             setImageData(null);
@@ -267,9 +284,9 @@ const Mission: React.FC = () => {
                             ✕
                         </button>
 
-                        <h2 className="text-xl font-bold">Upload Bukti Misi</h2>
+                        <h2 className="text-xl font-bold">Upload mission assignment</h2>
                         {selectedMission && <p className="text-gray-700 font-medium">Mission: {selectedMission.name}</p>}
-                        <p className="text-gray-600">Silakan foto langsung untuk bukti pelaksanaan misi:</p>
+                        <p className="text-gray-600">Please use your device's camera to make a submission:</p>
 
                         {!imageData ? (
                             <CameraCapture onCapture={handleCapture} />
@@ -290,7 +307,7 @@ const Mission: React.FC = () => {
                                 Retake
                             </Button>
                             <Button className="w-2/3" onClick={handleSubmit}>
-                                Kirim Bukti
+                                Save
                             </Button>
                         </div>
                     </div>

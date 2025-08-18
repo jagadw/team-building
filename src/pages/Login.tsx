@@ -19,11 +19,13 @@ const Login: React.FC = () => {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    const { isAuthenticated, user } = userStore();
-    if (isAuthenticated) {
-        const to = user?.role === "admin" ? "/adminmenu" : user?.role === "participant" ? "/next" : ""; // fallback
-        return <Navigate to={to} replace />;
-    }
+    // const { isAuthenticated, user, refetch } = userStore();
+    // refetch();
+    // if (isAuthenticated) {
+    //     const to = user?.role === "admin" ? "/adminmenu" : user?.role === "participant" ? "/next" : ""; // fallback
+    //     refetch();
+    //     return <Navigate to={to} replace />;
+    // }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
