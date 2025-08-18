@@ -15,12 +15,16 @@ const DashboardUser = () => {
     return (
         <div className="flex h-screen overflow-hidden bg-background">
             <SidebarUser isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col h-screen overflow-y-scroll">
                 <Header onToggleSidebar={() => setSidebarOpen(true)} />
                 <div className="flex-1 p-4">
                     <Routes>
                         <Route path="progress" element={<Progress />} />
                         <Route path="scan" element={<QRScan />} />
+
+                        <Route path="checkpoint/:slugCheckpoint" element={<Mission />} />
+                        <Route path="checkpoint/:slugCheckpoint/submission" element={<QRScan />} />
+
                         <Route path="mission" element={<Mission />} />
                         <Route path="missions" element={<Missions />} />
                         <Route path="upload" element={<Upload />} />
