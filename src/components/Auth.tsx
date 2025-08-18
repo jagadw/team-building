@@ -22,6 +22,5 @@ export function Auth({ roles, exclude = false, redirectTo = "/", children }: Aut
 		return <Navigate to={redirectTo} replace />;
 	}
 
-	// If you pass children → render them, else fallback to <Outlet /> for routing
 	return <>{children ?? <Outlet />}</>;
 }
