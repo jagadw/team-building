@@ -1,37 +1,28 @@
-import React, { useState } from 'react';
-
-interface Assignment {
-  id: number;
-  team: string;
-  mission: string;
-  file: string; // URL gambar
-  approved: boolean;
-  created_at: string; // ISO format
-}
+import React, { useEffect, useState } from 'react';
+import { getAssignments, type Assignment } from '../../services/assignmentService';
 
 const Assignments: React.FC = () => {
-  const [assignments, setAssignments] = useState<Assignment[]>([
-    {
-      id: 1,
-      team: 'Team Alpha',
-      mission: 'Photo Challenge',
-      file: 'https://via.placeholder.com/150',
-      approved: true,
-      created_at: '2025-07-31T10:30:00Z',
-    },
-    {
-      id: 2,
-      team: 'Team Bravo',
-      mission: 'QR Hunt',
-      file: 'https://via.placeholder.com/150',
-      approved: false,
-      created_at: '2025-07-31T11:00:00Z',
-    },
-  ]);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const toggleApproval = (id: number) => {
-    setAssignments(assignments.map(a => a.id === id ? { ...a, approved: !a.approved } : a));
-  };
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      try {
+        const res = await getAssignments(1); // default page 1
+        if (res.success) {
+          setAssignments(res.data);
+        }
+      } catch (err) {
+        console.error('Error fetching assignments:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssignments();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md">
@@ -41,33 +32,32 @@ const Assignments: React.FC = () => {
           <tr>
             <th className="p-2">Team</th>
             <th className="p-2">Mission</th>
-            <th className="p-2">Proof</th>
-            <th className="p-2">Status</th>
-            <th className="p-2">Submitted At</th>
-            <th className="p-2">Actions</th>
+            <th className="p-2">Checkpoint</th>
+            <th className="p-2">File</th>
+            <th className="p-2">Created At</th>
           </tr>
         </thead>
         <tbody>
           {assignments.map(assign => (
             <tr key={assign.id} className="border-t">
-              <td className="p-2">{assign.team}</td>
-              <td className="p-2">{assign.mission}</td>
+              <td className="p-2">{assign.team.name}</td>
+              <td className="p-2">{assign.mission.name}</td>
+              <td className="p-2">{assign.mission.checkpoint.name}</td>
               <td className="p-2">
-                <img src={assign.file} alt="Proof" className="w-16 h-16 object-cover rounded" />
+                {assign.file ? (
+                  <a
+                    href={`${import.meta.env.VITE_API_BASE_URL}/v1/file/${assign.file}`}
+                    target="_blank"
+                    className="text-blue-600 underline"
+                  >
+                    View File
+                  </a>
+                ) : (
+                  '-'
+                )}
               </td>
               <td className="p-2">
-                <span className={assign.approved ? 'text-green-600' : 'text-red-600'}>
-                  {assign.approved ? 'Approved' : 'Pending'}
-                </span>
-              </td>
-              <td className="p-2">{new Date(assign.created_at).toLocaleString()}</td>
-              <td className="p-2">
-                <button
-                  onClick={() => toggleApproval(assign.id)}
-                  className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                >
-                  {assign.approved ? 'Revoke' : 'Approve'}
-                </button>
+                {new Date(assign.created_at).toLocaleString()}
               </td>
             </tr>
           ))}

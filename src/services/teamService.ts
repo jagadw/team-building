@@ -1,4 +1,4 @@
-import axios from './api';
+import axios from "./api";
 
 export interface Event {
   id: number;
@@ -10,11 +10,16 @@ export interface Event {
 }
 
 export interface Participant {
-  id: number;
+  id?: number;
   name: string;
   phone: string;
   is_leader: boolean;
-  team_id: number;
+  team_id?: number;
+}
+
+export interface UserPayload {
+  email: string;
+  password: string;
 }
 
 export interface Team {
@@ -26,18 +31,29 @@ export interface Team {
   deleted_at: string | null;
   event: Event;
   participants: Participant[];
+  user?: UserPayload; // tambahkan untuk edit
+}
+
+export interface CreateTeamPayload {
+  name: string;
+  event_id: number;
+  user: UserPayload;
+  participants: Participant[];
 }
 
 export const getTeams = async (eventSlug: string): Promise<Team[]> => {
-  const response = await axios.get(`/v1/admin/teams?page=1`);
+  const response = await axios.get(`/v1/admin/teams?page=1&slug=${eventSlug}`);
   return response.data.data;
 };
 
-export const createTeam = async (payload: Partial<Team>): Promise<void> => {
+export const createTeam = async (payload: CreateTeamPayload): Promise<void> => {
   await axios.post(`/v1/admin/teams`, payload);
 };
 
-export const updateTeam = async (id: number, payload: Partial<Team>): Promise<void> => {
+export const updateTeam = async (
+  id: number,
+  payload: Partial<CreateTeamPayload>
+): Promise<void> => {
   await axios.put(`/v1/admin/teams/${id}`, payload);
 };
 
