@@ -34,7 +34,7 @@ const ParticipantMenu: React.FC = () => {
                                 <div key={event.id} className="flex items-center gap-3">
                                     <Link to={`/event/${event.slug}`} className="flex-1">
                                         <Button
-                                            variant="gradient"
+                                            variant="link"
                                             className="w-full py-4 px-6 rounded-xl flex items-center justify-between"
                                             style={{ background: "linear-gradient(to right, #1E2836, #4F46E5)", color: "#fff" }}
                                         >
