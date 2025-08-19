@@ -159,67 +159,76 @@ const Missions: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">
               {editing.id ? 'Edit Mission' : 'Add Mission'}
             </h3>
-            <input
-              value={editing.name || ''}
-              onChange={(e) =>
-                setEditing({ ...editing, name: e.target.value })
-              }
-              className="w-full mb-2 p-2 border rounded"
-              placeholder="Name"
-            />
-            <textarea
-              value={editing.description || ''}
-              onChange={(e) =>
-                setEditing({ ...editing, description: e.target.value })
-              }
-              className="w-full mb-2 p-2 border rounded"
-              placeholder="Description"
-            />
-
-            {/* Dropdown checkpoint */}
-            <select
-              value={editing.checkpoint_id || 0}
-              onChange={(e) =>
-                setEditing({ ...editing, checkpoint_id: parseInt(e.target.value) })
-              }
-              className="w-full mb-2 p-2 border rounded"
-            >
-              <option value={0}>Pilih Checkpoint</option>
-              {checkpoints.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-
-            <input
-              type="number"
-              value={editing.point || 0}
-              onChange={(e) =>
-                setEditing({ ...editing, point: parseInt(e.target.value) })
-              }
-              className="w-full mb-2 p-2 border rounded"
-              placeholder="Point"
-            />
-            <input
-              value={editing.video || ''}
-              onChange={(e) =>
-                setEditing({ ...editing, video: e.target.value })
-              }
-              className="w-full mb-2 p-2 border rounded"
-              placeholder="YouTube Video URL"
-            />
-            <label className="block mb-2">
+            <div className="mb-3">
+              <label className="block mb-1 font-medium">Name</label>
               <input
-                type="checkbox"
-                checked={editing.is_hidden || false}
-                onChange={(e) =>
-                  setEditing({ ...editing, is_hidden: e.target.checked })
-                }
-                className="mr-2"
+                value={editing.name || ''}
+                onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                className="w-full p-2 border rounded"
+                placeholder="Name"
               />
-              Hidden
-            </label>
+            </div>
+
+            <div className="mb-3">
+              <label className="block mb-1 font-medium">Description</label>
+              <textarea
+                value={editing.description || ''}
+                onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                className="w-full p-2 border rounded"
+                placeholder="Description"
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="block mb-1 font-medium">Checkpoint</label>
+              <select
+                value={editing.checkpoint_id || 0}
+                onChange={(e) =>
+                  setEditing({ ...editing, checkpoint_id: parseInt(e.target.value) })
+                }
+                className="w-full p-2 border rounded"
+              >
+                <option value={0}>Pilih Checkpoint</option>
+                {checkpoints.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-3">
+              <label className="block mb-1 font-medium">Point</label>
+              <input
+                type="number"
+                value={editing.point || 0}
+                onChange={(e) => setEditing({ ...editing, point: parseInt(e.target.value) })}
+                className="w-full p-2 border rounded"
+                placeholder="Point"
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="block mb-1 font-medium">YouTube Video URL</label>
+              <input
+                value={editing.video || ''}
+                onChange={(e) => setEditing({ ...editing, video: e.target.value })}
+                className="w-full p-2 border rounded"
+                placeholder="YouTube Video URL"
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={editing.is_hidden || false}
+                  onChange={(e) => setEditing({ ...editing, is_hidden: e.target.checked })}
+                  className="mr-2"
+                />
+                Hidden
+              </label>
+            </div>
             <div className="flex justify-end space-x-2 mt-4">
               <button
                 onClick={() => setEditing(null)}
