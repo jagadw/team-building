@@ -1,8 +1,11 @@
 import React from "react";
-import { logout } from '../services/authService';
-
-
+import { logout } from "../services/authService";
 import { Link, useParams, useNavigate } from "react-router-dom";
+
+interface BottomNavbarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
 const navItems = [
   { to: (slug: string | undefined) => `/event/${slug}/progress`, label: "Progress", icon: "📈" },
@@ -11,12 +14,12 @@ const navItems = [
   { to: (slug: string | undefined) => `/event/${slug}/upload`, label: "Upload", icon: "📤" },
 ];
 
-const BottomNavbar: React.FC = () => {
+const BottomNavbar: React.FC<BottomNavbarProps> = ({ isOpen, onClose }) => {
   const { slug } = useParams();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // Add your logout logic here (e.g., clear tokens, etc.)
+    logout();
     navigate("/login");
   };
 
@@ -56,7 +59,7 @@ const BottomNavbar: React.FC = () => {
         <span className="text-xs font-semibold">{navItems[3].label}</span>
       </Link>
       <button
-        onClick={logout}
+        onClick={handleLogout}
         className="flex flex-col items-center flex-1 mx-1 py-2 rounded-xl hover:bg-red-400 hover:text-white transition-colors duration-150"
       >
         <span className="text-2xl mb-1">🚪</span>
