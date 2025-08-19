@@ -67,7 +67,7 @@ const Checkpoints: React.FC = () => {
   };
 
 const handleDownloadQR = (slug: string) => {
-  const qrCanvas = document.getElementById(`qr-${slug}`) as HTMLCanvasElement;
+  const qrCanvas = document.getElementById(`qr-code`) as HTMLCanvasElement;
   if (!qrCanvas) return;
 
   const size = qrCanvas.width + 40;
@@ -106,7 +106,7 @@ const handleDownloadQR = (slug: string) => {
           <tr>
             <th className="p-2">Name</th>
             <th className="p-2">Description</th>
-            <th className="p-2">Slug (QR)</th>
+            <th className="p-2">Download QR</th>
             <th className="p-2">Location</th>
             <th className="p-2">Point</th>
             <th className="p-2">Actions</th>
@@ -131,7 +131,7 @@ const handleDownloadQR = (slug: string) => {
                     onClick={() => handleDownloadQR(cp.slug)}
                     className="text-blue-600 underline hover:text-blue-800"
                   >
-                    {cp.slug}
+                    {cp.name}
                   </button>
                 </div>
               </td>
@@ -157,14 +157,15 @@ const handleDownloadQR = (slug: string) => {
               {editing ? 'Edit Checkpoint' : 'New Checkpoint'}
             </h3>
             {(['name', 'description', 'location', 'point'] as (keyof Checkpoint)[]).map(key => (
-              <input
-                key={key}
-                value={currentForm[key]}
-                onChange={(e) => setFormValue(key, key === 'point' ? parseInt(e.target.value) : e.target.value)}
-                className="w-full mb-2 p-2 border rounded"
-                placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-                type={key === 'point' ? 'number' : 'text'}
-              />
+              <div key={key} className="mb-4">
+                <label className="block text-sm font-medium mb-1">{key.charAt(0).toUpperCase() + key.slice(1)}</label>
+                <input
+                  type={key === 'point' ? 'number' : 'text'}
+                  value={currentForm[key] || ''}
+                  onChange={(e) => setFormValue(key, key === 'point' ? parseInt(e.target.value) : e.target.value)}
+                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+                />
+              </div>
             ))}
             <div className="flex justify-end space-x-2">
               <button onClick={() => { setEditing(null); setNewCheckpoint(null); }} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
