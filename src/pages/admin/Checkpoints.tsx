@@ -1,6 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { QRCodeCanvas } from 'qrcode.react';
-import { type Checkpoint, getCheckpoints, createCheckpoint, updateCheckpoint, deleteCheckpoint } from '../../services/checkpointService';
+import React, { useEffect, useState } from "react";
+import { QRCodeCanvas } from "qrcode.react";
+import {
+  type Checkpoint,
+  getCheckpoints,
+  createCheckpoint,
+  updateCheckpoint,
+  deleteCheckpoint,
+} from "../../services/checkpointService";
 
 const Checkpoints: React.FC = () => {
   const [checkpoints, setCheckpoints] = useState<Checkpoint[]>([]);
@@ -22,7 +28,7 @@ const Checkpoints: React.FC = () => {
   }, []);
 
   const handleDelete = async (id: number) => {
-    if (confirm('Are you sure you want to delete this checkpoint?')) {
+    if (confirm("Are you sure you want to delete this checkpoint?")) {
       await deleteCheckpoint(id);
       fetchCheckpoints();
     }
@@ -49,12 +55,12 @@ const Checkpoints: React.FC = () => {
       }
       setNewCheckpoint({
         id: 0,
-        name: '',
-        description: '',
-        slug: '',
-        location: '',
+        name: "",
+        description: "",
+        slug: "",
+        location: "",
         point: 0,
-        event_id: eventId
+        event_id: eventId,
       });
     }
   };
@@ -63,31 +69,38 @@ const Checkpoints: React.FC = () => {
 
   const setFormValue = (key: keyof Checkpoint, value: any) => {
     if (editing) setEditing({ ...editing, [key]: value });
-    else if (newCheckpoint) setNewCheckpoint({ ...newCheckpoint, [key]: value });
+    else if (newCheckpoint)
+      setNewCheckpoint({ ...newCheckpoint, [key]: value });
   };
 
-const handleDownloadQR = (slug: string) => {
-  const qrCanvas = document.getElementById(`qr-${slug}`) as HTMLCanvasElement;
-  if (!qrCanvas) return;
+  const handleDownloadQR = (slug: string, name: string) => {
+    const qrCanvas = document.getElementById(
+      `qr-${slug}`
+    ) as HTMLCanvasElement;
+    if (!qrCanvas) return;
 
-  const size = qrCanvas.width + 40;
-  const borderedCanvas = document.createElement("canvas");
-  borderedCanvas.width = size;
-  borderedCanvas.height = size;
-  const ctx = borderedCanvas.getContext("2d");
-  if (!ctx) return;
+    const size = qrCanvas.width + 40;
+    const borderedCanvas = document.createElement("canvas");
+    borderedCanvas.width = size;
+    borderedCanvas.height = size;
+    const ctx = borderedCanvas.getContext("2d");
+    if (!ctx) return;
 
-  ctx.fillStyle = "white";
-  ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, size, size);
 
-  ctx.drawImage(qrCanvas, 20, 20);
+    ctx.drawImage(qrCanvas, 20, 20);
 
-  const pngUrl = borderedCanvas.toDataURL("image/png");
-  const link = document.createElement("a");
-  link.href = pngUrl;
-  link.download = `qr-code.png`;
-  link.click();
-};
+    const pngUrl = borderedCanvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = pngUrl;
+
+    // nama file sesuai nama checkpoint (disanitasi)
+    const safeName = name.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+    link.download = `${safeName}.png`;
+
+    link.click();
+  };
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-md">
@@ -113,7 +126,7 @@ const handleDownloadQR = (slug: string) => {
           </tr>
         </thead>
         <tbody>
-          {checkpoints.map(cp => (
+          {checkpoints.map((cp) => (
             <tr key={cp.id} className="border-t">
               <td className="p-2">{cp.name}</td>
               <td className="p-2">{cp.description}</td>
@@ -124,11 +137,10 @@ const handleDownloadQR = (slug: string) => {
                     id={`qr-${cp.slug}`}
                     value={cp.slug}
                     size={100}
-                    className='border-3 border-white'
                     style={{ display: "none" }}
                   />
                   <button
-                    onClick={() => handleDownloadQR(cp.slug)}
+                    onClick={() => handleDownloadQR(cp.slug, cp.name)}
                     className="text-blue-600 underline hover:text-blue-800"
                   >
                     {cp.name}
@@ -136,14 +148,29 @@ const handleDownloadQR = (slug: string) => {
                 </div>
               </td>
               <td className="p-2">
-                <a href={cp.location} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+                <a
+                  href={cp.location}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 underline"
+                >
                   Map
                 </a>
               </td>
               <td className="p-2">{cp.point}</td>
               <td className="p-2 space-x-2">
-                <button onClick={() => openForm(cp)} className="text-blue-500 hover:underline">Edit</button>
-                <button onClick={() => handleDelete(cp.id)} className="text-red-500 hover:underline">Delete</button>
+                <button
+                  onClick={() => openForm(cp)}
+                  className="text-blue-500 hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(cp.id)}
+                  className="text-red-500 hover:underline"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
@@ -154,22 +181,46 @@ const handleDownloadQR = (slug: string) => {
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">
-              {editing ? 'Edit Checkpoint' : 'New Checkpoint'}
+              {editing ? "Edit Checkpoint" : "New Checkpoint"}
             </h3>
-            {(['name', 'description', 'location', 'point'] as (keyof Checkpoint)[]).map(key => (
-              <div key={key} className="mb-4">
-                <label className="block text-sm font-medium mb-1">{key.charAt(0).toUpperCase() + key.slice(1)}</label>
-                <input
-                  type={key === 'point' ? 'number' : 'text'}
-                  value={currentForm[key] || ''}
-                  onChange={(e) => setFormValue(key, key === 'point' ? parseInt(e.target.value) : e.target.value)}
-                  className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
-                />
-              </div>
-            ))}
+            {(["name", "description", "location", "point"] as (keyof Checkpoint)[]).map(
+              (key) => (
+                <div key={key} className="mb-4">
+                  <label className="block text-sm font-medium mb-1">
+                    {key.charAt(0).toUpperCase() + key.slice(1)}
+                  </label>
+                  <input
+                    type={key === "point" ? "number" : "text"}
+                    value={currentForm[key] || ""}
+                    onChange={(e) =>
+                      setFormValue(
+                        key,
+                        key === "point"
+                          ? parseInt(e.target.value)
+                          : e.target.value
+                      )
+                    }
+                    className="w-full px-3 py-2 border rounded focus:outline-none focus:ring"
+                  />
+                </div>
+              )
+            )}
             <div className="flex justify-end space-x-2">
-              <button onClick={() => { setEditing(null); setNewCheckpoint(null); }} className="bg-gray-300 px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleSave} className="bg-blue-600 text-white px-4 py-2 rounded">Save</button>
+              <button
+                onClick={() => {
+                  setEditing(null);
+                  setNewCheckpoint(null);
+                }}
+                className="bg-gray-300 px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+              >
+                Save
+              </button>
             </div>
           </div>
         </div>

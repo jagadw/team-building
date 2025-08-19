@@ -71,7 +71,7 @@ const AdminMenu: React.FC = () => {
           <h2 className="text-2xl font-bold mb-6 text-purple-200">Admin Menu</h2>
           <nav className="space-y-4">
             <Link
-              to="/admin"
+              to="/adminmenu"
               className="block py-2 px-4 rounded-lg hover:bg-purple-700 hover:text-white transition"
             >
               Dashboard
@@ -177,31 +177,31 @@ const AdminMenu: React.FC = () => {
       <nav className="fixed bottom-0 left-0 w-full z-50 bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 shadow-lg">
         <div className="flex justify-around items-center py-3 px-4 text-white font-semibold text-lg">
           <Link
-            to="/admin"
+            to="/adminmenu"
             className="flex flex-col items-center hover:text-yellow-200 transition"
           >
-            <span className="material-icons">dashboard</span>
+            <span className="material-icons">🖥️</span>
             Dashboard
           </Link>
           <button
             onClick={() => setShowModal(true)}
             className="flex flex-col items-center hover:text-yellow-200 transition focus:outline-none"
           >
-            <span className="material-icons">add_circle</span>
+            <span className="material-icons">➕</span>
             Create
           </button>
           <Link
             to="/admin/events"
             className="flex flex-col items-center hover:text-yellow-200 transition"
           >
-            <span className="material-icons">event</span>
+            <span className="material-icons">📃</span>
             Events
           </Link>
           <button
             onClick={logout}
             className="flex flex-col items-center hover:text-yellow-200 transition focus:outline-none"
           >
-            <span className="material-icons">logout</span>
+            <span className="material-icons">🚪</span>
             Logout
           </button>
         </div>
