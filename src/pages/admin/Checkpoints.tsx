@@ -67,7 +67,7 @@ const Checkpoints: React.FC = () => {
   };
 
 const handleDownloadQR = (slug: string) => {
-  const qrCanvas = document.getElementById(`qr-code`) as HTMLCanvasElement;
+  const qrCanvas = document.getElementById(`qr-${slug}`) as HTMLCanvasElement;
   if (!qrCanvas) return;
 
   const size = qrCanvas.width + 40;
@@ -85,7 +85,7 @@ const handleDownloadQR = (slug: string) => {
   const pngUrl = borderedCanvas.toDataURL("image/png");
   const link = document.createElement("a");
   link.href = pngUrl;
-  link.download = `${slug}-qr.png`;
+  link.download = `qr-code.png`;
   link.click();
 };
 
